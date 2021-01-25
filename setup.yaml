@@ -44,6 +44,8 @@
       become: yes
 
   tasks:
+### Set inotify watches for JetBrains
+
     - name: Set inotify watches
       become: yes
       copy:
@@ -51,6 +53,8 @@
         content: |
           fs.inotify.max_user_watches = 524288
       register: inotify
+
+### Set open files stuff for app requirements
 
     - name: Set file max
       become: yes
@@ -89,11 +93,20 @@
         regexp: '^DefaultLimitNOFILE='
         line: DefaultLimitNOFILE=524288
 
+### Add APT keys and repos
+
     - name: Add bazel Apt signing key
       become: yes
       apt_key:
         url: https://bazel.build/bazel-release.pub.gpg
         state: present
+
+    - name: Add bazel repository into sources list
+      become: yes
+      apt_repository:
+        repo: deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8
+        state: present
+        filename: bazel
 
     - name: add Docker GPG key
       become: yes
@@ -107,12 +120,29 @@
         repo: deb https://download.docker.com/linux/ubuntu bionic stable
         state: present
 
-    - name: Add bazel repository into sources list
+    - name: add helm GPG key
+      become: yes
+      apt_key:
+        url: https://baltocdn.com/helm/signing.asc
+        state: present
+
+    - name: add helm repository to apt
       become: yes
       apt_repository:
-        repo: deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8
+        repo: deb https://baltocdn.com/helm/stable/debian/ all main
         state: present
-        filename: bazel
+
+    - name: add kubectl GPG key
+      become: yes
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: add kubectl repository to apt
+      become: yes
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
 
     - name: Add lutris ppa
       become: yes
@@ -123,6 +153,8 @@
       become: yes
       apt_repository:
         repo: ppa:git-core/ppa
+
+### Install software
 
     - name: Install a list of packages
       become: yes
@@ -163,13 +195,8 @@
           - xournal
           - xdg-desktop-portal
           - xdg-desktop-portal-gtk
-
-    - name: start docker
-      become: yes
-      service:
-        name: docker
-        state: started
-        enabled: yes
+          - kubectl
+          - helm
 
     - name: Install snaps
       become: yes
@@ -200,6 +227,23 @@
           - go
           - skype
           - slack
+
+### Docker setup
+
+    - name: Adding user {{ ansible_env.USER }} to docker group
+      become: yes
+      user:
+        name: "{{ ansible_env.USER }}"
+        shell: /bin/bash
+        groups: docker
+        append: yes
+
+    - name: start docker
+      become: yes
+      service:
+        name: docker
+        state: started
+        enabled: yes
 
 ### Install MultiMC
 
@@ -254,6 +298,7 @@
       when: lsd_check_deb.rc == 1
 
 ### Install steam
+
     - name: Check if LSD is installed
       command: dpkg-query -W steam-launcher
       register: steam_check_deb
