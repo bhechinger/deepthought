@@ -197,6 +197,7 @@
           - xdg-desktop-portal-gtk
           - kubectl
           - helm
+          - redis-tools
 
     - name: Install snaps
       become: yes
