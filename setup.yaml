@@ -172,7 +172,7 @@
           - quassel-client
           - git
           - ark
-          - bazel
+          - bazel=3.7.2
           - bison
           - cli-common
           - cloc
@@ -201,6 +201,7 @@
           - helm
           - redis-tools
           - zsh
+          - ksshaskpass
 
     - name: Install snaps
       become: yes
@@ -304,7 +305,6 @@
 ### Install ZFS dependencies
 
     - name: Install Antibody
-      warn: false
       become: yes
       shell: curl -sfL git.io/antibody | sh -s - -b /usr/local/bin
 
