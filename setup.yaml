@@ -42,6 +42,8 @@
         franz_version: 5.6.1
     - role: ansible-role-keybase
       become: yes
+#    - role: fubarhouse.golang
+#      become: yes
 
   tasks:
 ### Set inotify watches for JetBrains
@@ -198,6 +200,7 @@
           - kubectl
           - helm
           - redis-tools
+          - zsh
 
     - name: Install snaps
       become: yes
@@ -231,11 +234,11 @@
 
 ### Docker setup
 
-    - name: Adding user {{ ansible_env.USER }} to docker group
+    - name: Updating user {{ ansible_env.USER }} to docker group and zsh
       become: yes
       user:
         name: "{{ ansible_env.USER }}"
-        shell: /bin/bash
+        shell: /usr/bin/zsh
         groups: docker
         append: yes
 
@@ -297,6 +300,13 @@
       become: yes
       apt: deb="/home/{{ ansible_env.USER }}/Downloads/lsd.deb"
       when: lsd_check_deb.rc == 1
+
+### Install ZFS dependencies
+
+    - name: Install Antibody
+      warn: false
+      become: yes
+      shell: curl -sfL git.io/antibody | sh -s - -b /usr/local/bin
 
 ### Install steam
 

@@ -2,5 +2,6 @@ ansible-galaxy collection install community.general
 ansible-galaxy install alban.andrieu.dropbox
 ansible-galaxy install patrick-hill.franz
 ansible-galaxy install git+https://github.com/leonallen22/ansible-role-keybase.git
+ansible-galaxy install fubarhouse.golang
 
 ansible-playbook --ask-become-pass setup.yaml
