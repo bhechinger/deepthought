@@ -1,3 +1,5 @@
+. /etc/os-release
+export VERSION_ID
 ansible-galaxy collection install community.general
 ansible-galaxy install alban.andrieu.dropbox
 ansible-galaxy install patrick-hill.franz

@@ -95,6 +95,15 @@
         regexp: '^DefaultLimitNOFILE='
         line: DefaultLimitNOFILE=524288
 
+### Set firewire to highest priority RT process
+
+    - name: Set RTIRQ_NAME_LIST to set firewire highest priority
+      become: yes
+      lineinfile:
+        path: /etc/systemd/user.conf
+        regexp: '^RTIRQ_NAME_LIST='
+        line: RTIRQ_NAME_LIST="firewire snd usb i8042"
+
 ### Add APT keys and repos
 
     - name: Add bazel Apt signing key
@@ -146,6 +155,18 @@
         repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
         state: present
 
+    - name: add podman GPG key
+      become: yes
+      apt_key:
+        url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_env.VERSION_ID }}/Release.key"
+        state: present
+
+    - name: add podman repository to apt
+      become: yes
+      apt_repository:
+        repo: "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_env.VERSION_ID }}/ /"
+        state: present
+
     - name: Add lutris ppa
       become: yes
       apt_repository:
@@ -171,6 +192,8 @@
           - containerd.io
           - quassel-client
           - git
+          - git-lfs
+          - git-extras
           - ark
           - bazel=3.7.2
           - bison
@@ -202,6 +225,10 @@
           - redis-tools
           - zsh
           - ksshaskpass
+          - bat
+          - python3-pip
+          - docker-compose
+          - podman
 
     - name: Install snaps
       become: yes
@@ -232,6 +259,13 @@
           - go
           - skype
           - slack
+
+    - name: install python packages
+      become: yes
+      pip:
+        executable: pip3
+        name:
+          - aws-mfa
 
 ### Docker setup
 
@@ -302,7 +336,7 @@
       apt: deb="/home/{{ ansible_env.USER }}/Downloads/lsd.deb"
       when: lsd_check_deb.rc == 1
 
-### Install ZFS dependencies
+### Install ZSH dependencies
 
     - name: Install Antibody
       become: yes
