@@ -177,6 +177,10 @@
       apt_repository:
         repo: ppa:git-core/ppa
 
+    - name: Add NodeSource stuff
+      become: yes
+      shell: curl -sL https://deb.nodesource.com/setup_14.x | bash -
+
 ### Install software
 
     - name: Install a list of packages
@@ -230,6 +234,8 @@
           - docker-compose
           - podman
           - vim
+          - nodejs
+          - fonts-firacode
 
     - name: Install snaps
       become: yes
