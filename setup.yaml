@@ -128,7 +128,7 @@
     - name: add docker repository to apt
       become: yes
       apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
         state: present
 
     - name: add helm GPG key
@@ -178,9 +178,19 @@
         repo: ppa:git-core/ppa
 
     - name: Add NodeSource stuff
+#      warn: false # why doesn't this work?
       become: yes
       shell: curl -sL https://deb.nodesource.com/setup_14.x | bash -
 
+    - name: Pin bazel to 3.7.2 as 4.0 breaks our pre-commit tests
+      become: yes
+      copy:
+        dest: "/etc/apt/preferences.d/bazel"
+        content: |
+          Package: bazel
+          Pin: version 3.7.2
+          Pin-Priority: 999
+      register: filemax
 ### Install software
 
     - name: Install a list of packages
@@ -199,7 +209,7 @@
           - git-lfs
           - git-extras
           - ark
-          - bazel=3.7.2
+          - bazel
           - bison
           - cli-common
           - cloc
@@ -302,13 +312,18 @@
     - name: Download multimc
       get_url:
         url: "{{ multimc_url }}/{{ multimc_file }}"
-        dest: "/home/{{ ansible_env.USER }}/Downloads/{{ multimc_file }}"
+        dest: "/tmp/{{ multimc_file }}"
       when: multimc_check_deb.rc == 1
 
     - name: Install multimc
       become: yes
-      apt: deb="/home/{{ ansible_env.USER }}/Downloads/{{ multimc_file }}"
+      apt: deb="/tmp/{{ multimc_file }}"
       when: multimc_check_deb.rc == 1
+
+    - name: Remove multimc installer file
+      ansible.builtin.file:
+        path: "/tmp/{{ multimc_file }}"
+        state: absent
 
 ### Install LSD
 
@@ -335,13 +350,18 @@
     - name: Get LSD
       get_url:
         url: "{{ lsd_url }}"
-        dest: "/home/{{ ansible_env.USER }}/Downloads/lsd.deb"
+        dest: "/tmp/lsd.deb"
       when: lsd_check_deb.rc == 1
 
     - name: Install LSD
       become: yes
-      apt: deb="/home/{{ ansible_env.USER }}/Downloads/lsd.deb"
+      apt: deb="/tmp/lsd.deb"
       when: lsd_check_deb.rc == 1
+
+    - name: Remove LSD installer file
+      ansible.builtin.file:
+        path: "/tmp/lsd.deb"
+        state: absent
 
 ### Install ZSH dependencies
 
@@ -360,10 +380,15 @@
     - name: Download Steam
       get_url:
         url: https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb
-        dest: "/home/{{ ansible_env.USER }}/Downloads/steam.deb"
+        dest: "/tmp/steam.deb"
       when: steam_check_deb.rc == 1
 
-    - name: Install multimc
+    - name: Install Steam
       become: yes
-      apt: deb="/home/{{ ansible_env.USER }}/Downloads/steam.deb"
+      apt: deb="/tmp/steam.deb"
       when: steam_check_deb.rc == 1
+
+    - name: Remove Steam installer file
+      ansible.builtin.file:
+        path: "/tmp/steam.deb"
+        state: absent
