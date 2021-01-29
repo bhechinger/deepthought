@@ -177,10 +177,17 @@
       apt_repository:
         repo: ppa:git-core/ppa
 
+    - name: Add Yubikey ppa
+      become: yes
+      apt_repository:
+        repo: ppa:yubico/stable
+
     - name: Add NodeSource stuff
 #      warn: false # why doesn't this work?
       become: yes
       shell: curl -sL https://deb.nodesource.com/setup_14.x | bash -
+
+### Pin apps
 
     - name: Pin bazel to 3.7.2 as 4.0 breaks our pre-commit tests
       become: yes
@@ -190,7 +197,7 @@
           Package: bazel
           Pin: version 3.7.2
           Pin-Priority: 999
-      register: filemax
+
 ### Install software
 
     - name: Install a list of packages
@@ -246,6 +253,7 @@
           - vim
           - nodejs
           - fonts-firacode
+          - yubikey-manager
 
     - name: Install snaps
       become: yes
