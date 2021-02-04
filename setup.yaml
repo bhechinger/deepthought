@@ -258,6 +258,8 @@
           - cifs-utils
           - evolution
           - evolution-ews
+          - handbrake
+          - handbrake-cli
 
     - name: Install snaps
       become: yes
