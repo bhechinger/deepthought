@@ -254,6 +254,8 @@
           - nodejs
           - fonts-firacode
           - yubikey-manager
+          - agordejo
+          - cifs-utils
 
     - name: Install snaps
       become: yes
@@ -268,6 +270,7 @@
           - yakyak
           - zoom-client
           - discord
+          - yubioath-desktop
 
     - name: Install snaps (edge)
       become: yes
@@ -291,6 +294,7 @@
         executable: pip3
         name:
           - aws-mfa
+          - linode-cli
 
 ### Docker setup
 
@@ -400,3 +404,12 @@
       ansible.builtin.file:
         path: "/tmp/steam.deb"
         state: absent
+
+    - name: Mount an NFS volume
+      become: yes
+      ansible.posix.mount:
+        src: //bob.4amlunch.net/NetShare
+        path: /home/wonko/NetShare
+        opts: rw,username=wonko,password=brian1978,_netdev,uid=1000,gid=1000
+        state: mounted
+        fstype: cifs
