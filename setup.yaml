@@ -256,6 +256,8 @@
           - yubikey-manager
           - agordejo
           - cifs-utils
+          - evolution
+          - evolution-ews
 
     - name: Install snaps
       become: yes
