@@ -6,9 +6,10 @@ ansible-galaxy collection install \
     ansible.posix
 
 ansible-galaxy install \
-    alban.andrieu.dropbox \
+    oefenweb.dropbox \
     patrick-hill.franz \
     git+https://github.com/leonallen22/ansible-role-keybase.git \
-    fubarhouse.golang
+    fubarhouse.golang \
+    m4rcu5nl.zerotier-one
 
-ansible-playbook --ask-become-pass setup.yaml
+ansible-playbook --ask-become-pass -e "@secrets.yaml" -e "zerotier_deb_release_repo=buster" setup.yaml
