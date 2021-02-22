@@ -48,6 +48,37 @@
       become: yes
     - role: oefenweb.dropbox
       become: yes
+    - role: cloudalchemy.node-exporter
+      become: yes
+    - role: cloudalchemy.prometheus
+      become: yes
+      vars:
+        prometheus_targets:
+          node:
+            - targets:
+                - localhost:9100
+                - localhost:9401
+              labels:
+                env: deepthought
+    - name: cloudalchemy.grafana
+      become: yes
+      vars:
+        grafana_security:
+          admin_user: wonko
+          admin_password: "{{ grafana_password }}"
+        grafana_datasources:
+          - name: prometheus
+            type: prometheus
+            access: proxy
+            url: 'http://localhost:9090'
+            basicAuth: false
+        grafana_dashboards:
+          - dashboard_id: 1860
+            revision_id: 1
+            datasource: prometheus
+          - dashboard_id: 6387
+            revision_id: 1
+            datasource: prometheus
 
   tasks:
 ### Set inotify watches for JetBrains
@@ -266,6 +297,7 @@
           - handbrake-cli
           - libqt5webkit5
           - openssh-server
+          - sysbench
 
     - name: Install snaps
       become: yes
@@ -306,6 +338,8 @@
         name:
           - aws-mfa
           - linode-cli
+          - jmespath
+          - passlib[bcrypt]
 
 ### Docker setup
 
@@ -424,3 +458,26 @@
         opts: rw,username=wonko,password=brian1978,_netdev,uid=1000,gid=1000
         state: mounted
         fstype: cifs
+
+### Setup nVidia Exporter, prometheus and grafana
+    - name: Install nvidia-exporter binary (assuming already built)
+      become: yes
+      copy:
+        src: "{{ ansible_env.HOME }}/projects/nvidia-exporter/bin/linux/nvidia-exporter"
+        dest: /usr/local/bin/nvidia-exporter
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Install nvidia-exporter systemd unit file
+      become: yes
+      template:
+        src: "{{ ansible_env.HOME }}/projects/nvidia-exporter/nvidia-exporter.service"
+        dest: /etc/systemd/system/nvidia-exporter.service
+
+    - name: start nvidia-exporter
+      become: yes
+      systemd:
+        state: started
+        name: nvidia-exporter
+        daemon_reload: yes

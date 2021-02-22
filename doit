@@ -10,6 +10,9 @@ ansible-galaxy install \
     patrick-hill.franz \
     git+https://github.com/leonallen22/ansible-role-keybase.git \
     fubarhouse.golang \
-    m4rcu5nl.zerotier-one
+    m4rcu5nl.zerotier-one \
+    cloudalchemy.node-exporter \
+    cloudalchemy.prometheus \
+    cloudalchemy.grafana
 
 ansible-playbook --ask-become-pass -e "@secrets.yaml" -e "zerotier_deb_release_repo=buster" setup.yaml
