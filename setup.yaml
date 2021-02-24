@@ -478,6 +478,7 @@
     - name: start nvidia-exporter
       become: yes
       systemd:
+        enabled: true
         state: started
         name: nvidia-exporter
         daemon_reload: yes
