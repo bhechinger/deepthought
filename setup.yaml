@@ -42,14 +42,16 @@
         franz_version: 5.6.1
     - role: ansible-role-keybase
       become: yes
-    - role: fubarhouse.golang
-      become: yes
     - role: m4rcu5nl.zerotier-one
       become: yes
     - role: oefenweb.dropbox
       become: yes
     - role: cloudalchemy.node-exporter
       become: yes
+      vars:
+        node_exporter_enabled_collectors:
+          - systemd
+          - processes
     - role: cloudalchemy.prometheus
       become: yes
       vars:
@@ -141,81 +143,32 @@
 
 ### Add APT keys and repos
 
-    - name: Add bazel Apt signing key
+    - name: Add apt signing keys
       become: yes
       apt_key:
-        url: https://bazel.build/bazel-release.pub.gpg
+        url: "{{ item }}"
         state: present
+      with_items:
+        - https://bazel.build/bazel-release.pub.gpg
+        - https://download.docker.com/linux/ubuntu/gpg
+        - https://baltocdn.com/helm/signing.asc
+        - https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        - "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_env.VERSION_ID }}/Release.key"
 
-    - name: Add bazel repository into sources list
+    - name: Add apt repositories into sources list
       become: yes
       apt_repository:
-        repo: deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8
+        repo: "{{ item }}"
         state: present
-        filename: bazel
-
-    - name: add Docker GPG key
-      become: yes
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
-
-    - name: add docker repository to apt
-      become: yes
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
-        state: present
-
-    - name: add helm GPG key
-      become: yes
-      apt_key:
-        url: https://baltocdn.com/helm/signing.asc
-        state: present
-
-    - name: add helm repository to apt
-      become: yes
-      apt_repository:
-        repo: deb https://baltocdn.com/helm/stable/debian/ all main
-        state: present
-
-    - name: add kubectl GPG key
-      become: yes
-      apt_key:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        state: present
-
-    - name: add kubectl repository to apt
-      become: yes
-      apt_repository:
-        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
-        state: present
-
-    - name: add podman GPG key
-      become: yes
-      apt_key:
-        url: "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_env.VERSION_ID }}/Release.key"
-        state: present
-
-    - name: add podman repository to apt
-      become: yes
-      apt_repository:
-        repo: "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_env.VERSION_ID }}/ /"
-        state: present
-
-    - name: Add lutris ppa
-      become: yes
-      apt_repository:
-        repo: ppa:lutris-team/lutris
-
-    - name: Add git ppa
-      become: yes
-      apt_repository:
-        repo: ppa:git-core/ppa
-
-    - name: Add Yubikey ppa
-      become: yes
-      apt_repository:
-        repo: ppa:yubico/stable
+      with_items:
+        - deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8
+        - deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        - deb https://baltocdn.com/helm/stable/debian/ all main
+        - deb https://apt.kubernetes.io/ kubernetes-xenial main
+        - "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_env.VERSION_ID }}/ /"
+        - ppa:lutris-team/lutris
+        - ppa:git-core/ppa
+        - ppa:yubico/stable
 
     - name: Add NodeSource stuff
 #      warn: false # why doesn't this work?
