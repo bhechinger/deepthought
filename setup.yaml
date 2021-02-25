@@ -251,6 +251,10 @@
           - libqt5webkit5
           - openssh-server
           - sysbench
+          - nvidia-cuda-dev
+          - cmake
+          - libncurses5-dev
+          - libncursesw5-dev
 
     - name: Install snaps
       become: yes
