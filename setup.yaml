@@ -58,6 +58,7 @@
         prometheus_targets:
           node:
             - targets:
+                - localhost:9002
                 - localhost:9100
                 - localhost:9401
               labels:
@@ -419,26 +420,55 @@
         state: mounted
         fstype: cifs
 
-### Setup nVidia Exporter, prometheus and grafana
-    - name: Install nvidia-exporter binary (assuming already built)
+### Setup nVidia Exporter
+#    - name: Install nvidia-exporter binary (assuming already built)
+#      become: yes
+#      copy:
+#        src: "{{ ansible_env.HOME }}/projects/nvidia-exporter/bin/linux/nvidia-exporter"
+#        dest: /usr/local/bin/nvidia-exporter
+#        owner: root
+#        group: root
+#        mode: '0755'
+#
+#    - name: Install nvidia-exporter systemd unit file
+#      become: yes
+#      template:
+#        src: "{{ ansible_env.HOME }}/projects/nvidia-exporter/nvidia-exporter.service"
+#        dest: /etc/systemd/system/nvidia-exporter.service
+#
+#    - name: start nvidia-exporter
+#      become: yes
+#      systemd:
+#        enabled: true
+#        state: started
+#        name: nvidia-exporter
+#        daemon_reload: yes
+
+
+### Setup JACK Exporter
+    - name: Create ~/.config/systemd/user if it does not exist
+      file:
+        path: "{{ ansible_env.HOME }}/.config/systemd/user"
+        state: directory
+        mode: '0755'
+
+    - name: Install jack-exporter binary (assuming already built)
       become: yes
       copy:
-        src: "{{ ansible_env.HOME }}/projects/nvidia-exporter/bin/linux/nvidia-exporter"
-        dest: /usr/local/bin/nvidia-exporter
+        src: "{{ ansible_env.HOME }}/projects/jack-exporter/jack-exporter"
+        dest: /usr/local/bin/jack-exporter
         owner: root
         group: root
         mode: '0755'
 
-    - name: Install nvidia-exporter systemd unit file
-      become: yes
+    - name: Install jack-exporter systemd unit file
       template:
-        src: "{{ ansible_env.HOME }}/projects/nvidia-exporter/nvidia-exporter.service"
-        dest: /etc/systemd/system/nvidia-exporter.service
+        src: "{{ ansible_env.HOME }}/projects/jack-exporter/jack-exporter.service"
+        dest: ~/.config/systemd/user/jack-exporter.service
 
-    - name: start nvidia-exporter
-      become: yes
-      systemd:
-        enabled: true
-        state: started
-        name: nvidia-exporter
-        daemon_reload: yes
+# This needs jack running first so we need to set this up to start elsewhere
+#    - name: start jack-exporter
+#      systemd:
+#        enabled: true
+#        state: started
+#        name: jack-exporter
