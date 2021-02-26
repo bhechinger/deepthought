@@ -58,9 +58,9 @@
         prometheus_targets:
           node:
             - targets:
-                - localhost:9002
                 - localhost:9100
                 - localhost:9401
+                - localhost:9402
               labels:
                 env: deepthought
     - name: cloudalchemy.grafana
