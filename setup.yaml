@@ -255,6 +255,9 @@
           - cmake
           - libncurses5-dev
           - libncursesw5-dev
+          - libjack-jackd2-dev
+          - librtaudio-dev
+          - librtmidi-dev
 
     - name: Install snaps
       become: yes
