@@ -139,7 +139,7 @@
       lineinfile:
         path: /etc/systemd/user.conf
         regexp: '^RTIRQ_NAME_LIST='
-        line: RTIRQ_NAME_LIST="firewire snd usb i8042"
+        line: RTIRQ_NAME_LIST="firewire_ohci firewire snd usb i8042"
 
 ### Add APT keys and repos
 
