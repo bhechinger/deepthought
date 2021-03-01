@@ -155,6 +155,7 @@
         - https://baltocdn.com/helm/signing.asc
         - https://packages.cloud.google.com/apt/doc/apt-key.gpg
         - "https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ ansible_env.VERSION_ID }}/Release.key"
+        - https://packages.riot.im/debian/riot-im-archive-keyring.gpg
 
     - name: Add apt repositories into sources list
       become: yes
@@ -170,6 +171,7 @@
         - ppa:lutris-team/lutris
         - ppa:git-core/ppa
         - ppa:yubico/stable
+        - deb [arch=amd64] https://packages.riot.im/debian/ default main
 
     - name: Add NodeSource stuff
 #      warn: false # why doesn't this work?
@@ -259,6 +261,7 @@
           - libjack-jackd2-dev
           - librtaudio-dev
           - librtmidi-dev
+          - element-desktop
 
     - name: Install snaps
       become: yes
