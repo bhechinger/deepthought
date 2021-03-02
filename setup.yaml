@@ -262,6 +262,7 @@
           - librtaudio-dev
           - librtmidi-dev
           - element-desktop
+          - audacious
 
     - name: Install snaps
       become: yes
