@@ -263,7 +263,6 @@
           - librtmidi-dev
           - element-desktop
           - audacious
-          - xtightvncviewer
 
     - name: Install snaps
       become: yes
@@ -280,6 +279,7 @@
           - discord
           - yubioath-desktop
           - kustomize
+          - circleci
 
     - name: Install snaps (edge)
       become: yes
