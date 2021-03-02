@@ -263,6 +263,7 @@
           - librtmidi-dev
           - element-desktop
           - audacious
+          - xtightvncviewer
 
     - name: Install snaps
       become: yes
