@@ -178,6 +178,9 @@
       become: yes
       shell: curl -sL https://deb.nodesource.com/setup_14.x | bash -
 
+    - name: Install CircleCI CLI
+      become: yes
+      shell: curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
 ### Pin apps
 
     - name: Pin bazel to 3.7.2 as 4.0 breaks our pre-commit tests
@@ -279,7 +282,6 @@
           - discord
           - yubioath-desktop
           - kustomize
-          - circleci
 
     - name: Install snaps (edge)
       become: yes
