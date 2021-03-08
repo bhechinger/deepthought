@@ -298,14 +298,6 @@
           - skype
           - slack
 
-    - name: install Go (1.16)
-      become: yes
-      community.general.snap:
-        classic: yes
-        channel: 1.16/stable
-        name:
-          - go
-
     - name: install python packages
       become: yes
       pip:
