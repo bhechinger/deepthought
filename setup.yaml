@@ -266,6 +266,7 @@
           - librtmidi-dev
           - element-desktop
           - audacious
+          - nmap
 
     - name: Install snaps
       become: yes
@@ -281,7 +282,6 @@
           - zoom-client
           - discord
           - yubioath-desktop
-          - kustomize
 
     - name: Install snaps (edge)
       become: yes
