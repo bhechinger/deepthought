@@ -167,9 +167,9 @@
         - deb https://baltocdn.com/helm/stable/debian/ all main
         - deb https://apt.kubernetes.io/ kubernetes-xenial main
         - ppa:lutris-team/lutris
-#        - ppa:git-core/ppa ## This is broken for hirsute
+        - ppa:git-core/ppa ## This is broken for hirsute
         - deb http://ppa.launchpad.net/yubico/stable/ubuntu focal main
-        - ppa:yubico/stable
+#        - ppa:yubico/stable
         - deb [arch=amd64] https://packages.riot.im/debian/ default main
 
     - name: Add NodeSource stuff
