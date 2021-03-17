@@ -42,8 +42,8 @@
         franz_version: 5.6.1
     - role: ansible-role-keybase
       become: yes
-    - role: m4rcu5nl.zerotier-one
-      become: yes
+#    - role: m4rcu5nl.zerotier-one
+#      become: yes
     - role: oefenweb.dropbox
       become: yes
     - role: cloudalchemy.node-exporter
@@ -425,6 +425,8 @@
         opts: rw,username=wonko,password=brian1978,_netdev,uid=1000,gid=1000
         state: mounted
         fstype: cifs
+
+### Install GVM and Go
 
 ### Setup nVidia Exporter
 #    - name: Install nvidia-exporter binary (assuming already built)
