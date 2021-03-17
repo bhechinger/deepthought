@@ -46,7 +46,7 @@
 #      become: yes
     - role: oefenweb.dropbox
       become: yes
-    - role: cloudalchemy.node-exporter
+    - role: cloudalchemy.node_exporter
       become: yes
       vars:
         node_exporter_enabled_collectors:

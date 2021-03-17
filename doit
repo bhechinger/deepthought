@@ -9,8 +9,7 @@ ansible-galaxy install \
     oefenweb.dropbox \
     patrick-hill.franz \
     git+https://github.com/leonallen22/ansible-role-keybase.git \
-    m4rcu5nl.zerotier-one \
-    cloudalchemy.node-exporter \
+    cloudalchemy.node_exporter \
     cloudalchemy.prometheus \
     cloudalchemy.grafana
 
