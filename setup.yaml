@@ -155,6 +155,7 @@
         - https://baltocdn.com/helm/signing.asc
         - https://packages.cloud.google.com/apt/doc/apt-key.gpg
         - https://packages.riot.im/debian/riot-im-archive-keyring.gpg
+        - https://packagecloud.io/golang-migrate/migrate/gpgkey
 
     - name: Add apt repositories into sources list
       become: yes
@@ -171,6 +172,7 @@
         - deb http://ppa.launchpad.net/yubico/stable/ubuntu focal main
 #        - ppa:yubico/stable
         - deb [arch=amd64] https://packages.riot.im/debian/ default main
+        - "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ {{ ansible_distribution_release }} main"
 
     - name: Add NodeSource stuff
 #      warn: false # why doesn't this work?
@@ -265,6 +267,7 @@
           - element-desktop
           - audacious
           - nmap
+          - migrate
 
     - name: Install snaps
       become: yes
