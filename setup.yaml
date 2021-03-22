@@ -156,6 +156,7 @@
         - https://packages.cloud.google.com/apt/doc/apt-key.gpg
         - https://packages.riot.im/debian/riot-im-archive-keyring.gpg
         - https://packagecloud.io/golang-migrate/migrate/gpgkey
+        - https://dl.winehq.org/wine-builds/winehq.key
 
     - name: Add apt repositories into sources list
       become: yes
@@ -173,6 +174,7 @@
 #        - ppa:yubico/stable
         - deb [arch=amd64] https://packages.riot.im/debian/ default main
         - "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ {{ ansible_distribution_release }} main"
+        - deb https://dl.winehq.org/wine-builds/ubuntu/ focal main
 
     - name: Add NodeSource stuff
 #      warn: false # why doesn't this work?
@@ -268,6 +270,7 @@
           - audacious
           - nmap
           - migrate
+          - wine-stable
 
     - name: Install snaps
       become: yes
@@ -349,6 +352,30 @@
       ansible.builtin.file:
         path: "/tmp/{{ multimc_file }}"
         state: absent
+
+### Install minikube
+#
+#    - name: Check if multimc is installed
+#      command: dpkg-query -W multimc
+#      register: multimc_check_deb
+#      failed_when: multimc_check_deb.rc > 1
+#      changed_when: multimc_check_deb.rc == 1
+#
+#    - name: Download multimc
+#      get_url:
+#        url: "{{ multimc_url }}/{{ multimc_file }}"
+#        dest: "/tmp/{{ multimc_file }}"
+#      when: multimc_check_deb.rc == 1
+#
+#    - name: Install multimc
+#      become: yes
+#      apt: deb="/tmp/{{ multimc_file }}"
+#      when: multimc_check_deb.rc == 1
+#
+#    - name: Remove multimc installer file
+#      ansible.builtin.file:
+#        path: "/tmp/{{ multimc_file }}"
+#        state: absent
 
 ### Install LSD
 
