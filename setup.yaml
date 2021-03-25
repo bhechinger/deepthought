@@ -270,7 +270,11 @@
           - audacious
           - nmap
           - migrate
-          - wine-stable
+          - wine-staging
+          - libpkcs11-helper1
+          - network-manager-openvpn
+          - network-manager-openvpn-gnome
+          - openvpn
 
     - name: Install snaps
       become: yes
@@ -328,6 +332,26 @@
         name: docker
         state: started
         enabled: yes
+
+### Fix Network Manager
+    - name: Tweak Network Manager
+      become: yes
+      lineinfile:
+        path: /etc/NetworkManager/NetworkManager.conf
+        regexp: '^managed='
+        line: managed=true
+
+### Configure VyperVPN
+    - name: Task name
+      stat:
+        path: /etc/openvpn/ca.vyprvpn.com.crt
+      register: vypervpn_cert
+
+    - name: Download VyperVPN Cert
+      get_url:
+        url: https://support.vyprvpn.com/hc/article_attachments/360052622052/ca.vyprvpn.com.crt
+        dest: /etc/openvpn/ca.vyprvpn.com.crt
+      when: not vypervpn_cert.stat.exists
 
 ### Install MultiMC
 
@@ -423,7 +447,7 @@
 
 ### Install steam
 
-    - name: Check if LSD is installed
+    - name: Check if Steam is installed
       command: dpkg-query -W steam-launcher
       register: steam_check_deb
       failed_when: steam_check_deb.rc > 1
