@@ -276,8 +276,6 @@
           - network-manager-openvpn-gnome
           - openvpn
           - winbind
-          - python-dev
-          - libboost-all-dev
 
     - name: Install snaps
       become: yes
