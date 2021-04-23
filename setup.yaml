@@ -42,46 +42,44 @@
         franz_version: 5.6.1
     - role: ansible-role-keybase
       become: yes
-#    - role: m4rcu5nl.zerotier-one
-#      become: yes
     - role: oefenweb.dropbox
       become: yes
-    - role: cloudalchemy.node_exporter
-      become: yes
-      vars:
-        node_exporter_enabled_collectors:
-          - systemd
-          - processes
-    - role: cloudalchemy.prometheus
-      become: yes
-      vars:
-        prometheus_targets:
-          node:
-            - targets:
-                - localhost:9100
-                - localhost:9401
-                - localhost:9402
-              labels:
-                env: deepthought
-    - name: cloudalchemy.grafana
-      become: yes
-      vars:
-        grafana_security:
-          admin_user: wonko
-          admin_password: "{{ grafana_password }}"
-        grafana_datasources:
-          - name: prometheus
-            type: prometheus
-            access: proxy
-            url: 'http://localhost:9090'
-            basicAuth: false
-        grafana_dashboards:
-          - dashboard_id: 1860
-            revision_id: 1
-            datasource: prometheus
-          - dashboard_id: 6387
-            revision_id: 1
-            datasource: prometheus
+#    - role: cloudalchemy.node_exporter
+#      become: yes
+#      vars:
+#        node_exporter_enabled_collectors:
+#          - systemd
+#          - processes
+#    - role: cloudalchemy.prometheus
+#      become: yes
+#      vars:
+#        prometheus_targets:
+#          node:
+#            - targets:
+#                - localhost:9100
+#                - localhost:9401
+#                - localhost:9402
+#              labels:
+#                env: deepthought
+#    - name: cloudalchemy.grafana
+#      become: yes
+#      vars:
+#        grafana_security:
+#          admin_user: wonko
+#          admin_password: "{{ grafana_password }}"
+#        grafana_datasources:
+#          - name: prometheus
+#            type: prometheus
+#            access: proxy
+#            url: 'http://localhost:9090'
+#            basicAuth: false
+#        grafana_dashboards:
+#          - dashboard_id: 1860
+#            revision_id: 1
+#            datasource: prometheus
+#          - dashboard_id: 6387
+#            revision_id: 1
+#            datasource: prometheus
 
   tasks:
 ### Set inotify watches for JetBrains
@@ -92,6 +90,7 @@
         dest: "/etc/sysctl.d/90-inotify.conf"
         content: |
           fs.inotify.max_user_watches = 524288
+          fs.inotify.max_user_instances = 256
       register: inotify
 
 ### Set open files stuff for app requirements
@@ -170,9 +169,9 @@
         - deb https://apt.kubernetes.io/ kubernetes-xenial main
         - ppa:lutris-team/lutris
         - ppa:git-core/ppa ## This is broken for hirsute
-        - deb http://ppa.launchpad.net/yubico/stable/ubuntu focal main
-#        - ppa:yubico/stable
-        - deb [arch=amd64] https://packages.riot.im/debian/ default main
+        - ppa:yubico/stable
+#        - deb [arch=amd64] https://packages.riot.im/debian/ default main
+#        - "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ focal main"
         - "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ {{ ansible_distribution_release }} main"
         - deb https://dl.winehq.org/wine-builds/ubuntu/ focal main
 
@@ -225,7 +224,7 @@
           - jq
           - lutris
           - nfs-common
-          - postgresql-client-12
+          - postgresql-client
           - postgresql-client-common
           - rpcbind
           - s-tui
@@ -276,6 +275,7 @@
           - network-manager-openvpn-gnome
           - openvpn
           - winbind
+          - nginx
 
     - name: Install snaps
       become: yes
@@ -506,26 +506,26 @@
 #        daemon_reload: yes
 
 
-### Setup JACK Exporter
-    - name: Create ~/.config/systemd/user if it does not exist
-      file:
-        path: "{{ ansible_env.HOME }}/.config/systemd/user"
-        state: directory
-        mode: '0755'
-
-    - name: Install jack-exporter binary (assuming already built)
-      become: yes
-      copy:
-        src: "{{ ansible_env.HOME }}/projects/jack-exporter/jack-exporter"
-        dest: /usr/local/bin/jack-exporter
-        owner: root
-        group: root
-        mode: '0755'
-
-    - name: Install jack-exporter systemd unit file
-      template:
-        src: "{{ ansible_env.HOME }}/projects/jack-exporter/jack-exporter.service"
-        dest: ~/.config/systemd/user/jack-exporter.service
+## Setup JACK Exporter
+#    - name: Create ~/.config/systemd/user if it does not exist
+#      file:
+#        path: "{{ ansible_env.HOME }}/.config/systemd/user"
+#        state: directory
+#        mode: '0755'
+#
+#    - name: Install jack-exporter binary (assuming already built)
+#      become: yes
+#      copy:
+#        src: "{{ ansible_env.HOME }}/projects/jack-exporter/jack-exporter"
+#        dest: /usr/local/bin/jack-exporter
+#        owner: root
+#        group: root
+#        mode: '0755'
+#
+#    - name: Install jack-exporter systemd unit file
+#      template:
+#        src: "{{ ansible_env.HOME }}/projects/jack-exporter/jack-exporter.service"
+#        dest: ~/.config/systemd/user/jack-exporter.service
 
 # This needs jack running first so we need to set this up to start elsewhere
 #    - name: start jack-exporter
@@ -533,3 +533,56 @@
 #        enabled: true
 #        state: started
 #        name: jack-exporter
+
+### Setup nginx
+    - name: Create a directory if it does not exist
+      become: yes
+      file:
+        path: /etc/ssl/self
+        state: directory
+        mode: '0755'
+
+    - name: Generate an OpenSSL private key with the default values (4096 bits, RSA)
+      become: yes
+      community.crypto.openssl_privatekey:
+        path: /etc/ssl/self/chremoas-dev.4amlunch.net.key
+
+    - name: Generate an OpenSSL Certificate Signing Request
+      become: yes
+      community.crypto.openssl_csr:
+        path: /etc/ssl/self/chremoas-dev.4amlunch.net.csr
+        privatekey_path: /etc/ssl/self/chremoas-dev.4amlunch.net.key
+        common_name: chremoas-dev.4amlunch.net
+
+    - name: Generate a Self Signed OpenSSL certificate
+      become: yes
+      community.crypto.x509_certificate:
+        path: /etc/ssl/self/chremoas-dev.4amlunch.net.crt
+        privatekey_path: /etc/ssl/self/chremoas-dev.4amlunch.net.key
+        csr_path: /etc/ssl/self/chremoas-dev.4amlunch.net.csr
+        provider: selfsigned
+
+    - name: start nginx
+      become: yes
+      service:
+        name: nginx
+        state: started
+
+    - name: copy the nginx config file and restart nginx
+      become: yes
+      copy:
+        src: /home/wonko/projects/deepthought/nginx/chremoas-dev.cfg
+        dest: /etc/nginx/sites-available/chremoas-dev.cfg
+
+    - name: create symlink
+      become: yes
+      file:
+        src: /etc/nginx/sites-available/chremoas-dev.cfg
+        dest: /etc/nginx/sites-enabled/chremoas-dev
+        state: link
+
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
+      become: yes
