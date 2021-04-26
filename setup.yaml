@@ -349,6 +349,7 @@
       register: vypervpn_cert
 
     - name: Download VyperVPN Cert
+      become: yes
       get_url:
         url: https://support.vyprvpn.com/hc/article_attachments/360052622052/ca.vyprvpn.com.crt
         dest: /etc/openvpn/ca.vyprvpn.com.crt
