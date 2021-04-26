@@ -1,9 +1,9 @@
 ---
 roles:
-  - src: https://github.com/leonallen22/ansible-role-keybase.git
+  - src: https://github.com/bhechinger/ansible-role-keybase.git
     name: ansible-role-keybase
     scm: git
-    version: master
+    version: patch-1
   - src: oefenweb.dropbox
   - src: patrick-hill.franz
   - src: cloudalchemy.node_exporter
