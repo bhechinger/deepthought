@@ -265,7 +265,7 @@
           - libjack-jackd2-dev
           - librtaudio-dev
           - librtmidi-dev
-#          - element-desktop
+          - element-desktop
           - audacious
           - nmap
           - migrate
