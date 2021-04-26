@@ -170,7 +170,7 @@
         - ppa:lutris-team/lutris
         - ppa:git-core/ppa ## This is broken for hirsute
         - ppa:yubico/stable
-#        - deb [arch=amd64] https://packages.riot.im/debian/ default main
+        - deb [arch=amd64] https://packages.riot.im/debian/ default main
         - "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ focal main"
 #        - "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ {{ ansible_distribution_release }} main"
         - deb https://dl.winehq.org/wine-builds/ubuntu/ {{ ansible_distribution_release }} main
@@ -265,7 +265,7 @@
           - libjack-jackd2-dev
           - librtaudio-dev
           - librtmidi-dev
-          - element-desktop
+#          - element-desktop
           - audacious
           - nmap
           - migrate
