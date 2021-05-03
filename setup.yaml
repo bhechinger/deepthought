@@ -44,6 +44,8 @@
       become: yes
     - role: oefenweb.dropbox
       become: yes
+    - role: stefangweichinger.ansible_rclone
+      become: yes
 #    - role: cloudalchemy.node_exporter
 #      become: yes
 #      vars:
