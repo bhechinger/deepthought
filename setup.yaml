@@ -278,6 +278,7 @@
           - openvpn
           - winbind
           - nginx
+          - colordiff
 
     - name: Install snaps
       become: yes
