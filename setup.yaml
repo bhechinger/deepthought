@@ -294,6 +294,7 @@
           - zoom-client
           - discord
           - yubioath-desktop
+          - irccloud
 
     - name: Install snaps (edge)
       become: yes
@@ -474,14 +475,14 @@
         path: "/tmp/steam.deb"
         state: absent
 
-    - name: Mount an NFS volume
-      become: yes
-      ansible.posix.mount:
-        src: //bob.4amlunch.net/NetShare
-        path: /home/wonko/NetShare
-        opts: rw,username=wonko,password=brian1978,_netdev,uid=1000,gid=1000
-        state: mounted
-        fstype: cifs
+#    - name: Mount an NFS volume
+#      become: yes
+#      ansible.posix.mount:
+#        src: //bob.4amlunch.net/NetShare
+#        path: /home/wonko/NetShare
+#        opts: rw,username=wonko,password=brian1978,_netdev,uid=1000,gid=1000
+#        state: mounted
+#        fstype: cifs
 
 ### Install GVM and Go
 
