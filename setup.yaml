@@ -139,9 +139,9 @@
     - name: Set RTIRQ_NAME_LIST to set firewire highest priority
       become: yes
       lineinfile:
-        path: /etc/systemd/user.conf
+        path: /etc/default/rtirq
         regexp: '^RTIRQ_NAME_LIST='
-        line: RTIRQ_NAME_LIST="firewire_ohci firewire snd usb i8042"
+        line: RTIRQ_NAME_LIST="firewire snd usb i8042"
 
 ### Add APT keys and repos
 
@@ -279,6 +279,7 @@
           - winbind
           - nginx
           - colordiff
+          - python-is-python3
 
     - name: Install snaps
       become: yes
