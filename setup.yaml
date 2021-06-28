@@ -280,6 +280,7 @@
           - nginx
           - colordiff
           - python-is-python3
+          - adb
 
     - name: Install snaps
       become: yes
