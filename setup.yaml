@@ -174,7 +174,6 @@
         - ppa:yubico/stable
         - deb [arch=amd64] https://packages.riot.im/debian/ default main
         - "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ focal main"
-#        - "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ {{ ansible_distribution_release }} main"
         - deb https://dl.winehq.org/wine-builds/ubuntu/ {{ ansible_distribution_release }} main
 
     - name: Add NodeSource stuff
@@ -297,6 +296,7 @@
           - discord
           - yubioath-desktop
           - irccloud
+          - yq
 
     - name: Install snaps (edge)
       become: yes
