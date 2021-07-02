@@ -280,6 +280,8 @@
           - colordiff
           - python-is-python3
           - adb
+          - ethtool
+          - stressapptest
 
     - name: Install snaps
       become: yes
