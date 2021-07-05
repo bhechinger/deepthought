@@ -85,7 +85,6 @@
 
   tasks:
 ### Set inotify watches for JetBrains
-
     - name: Set inotify watches
       become: yes
       copy:
@@ -96,7 +95,6 @@
       register: inotify
 
 ### Set open files stuff for app requirements
-
     - name: Set file max
       become: yes
       copy:
@@ -135,7 +133,6 @@
         line: DefaultLimitNOFILE=524288
 
 ### Set firewire to highest priority RT process
-
     - name: Set RTIRQ_NAME_LIST to set firewire highest priority
       become: yes
       lineinfile:
@@ -143,8 +140,15 @@
         regexp: '^RTIRQ_NAME_LIST='
         line: RTIRQ_NAME_LIST="firewire snd usb i8042"
 
-### Add APT keys and repos
+## Set Governor to performance
+    - name: Set Governor to performance
+      become: yes
+      copy:
+        dest: "/etc/default/cpufrequtils"
+        content: |
+          GOVERNOR="performance"
 
+### Add APT keys and repos
     - name: Add apt signing keys
       become: yes
       apt_key:
@@ -184,8 +188,8 @@
     - name: Install CircleCI CLI
       become: yes
       shell: curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
-### Pin apps
 
+### Pin apps
     - name: Pin bazel to 3.7.2 as 4.0 breaks our pre-commit tests
       become: yes
       copy:
@@ -196,7 +200,6 @@
           Pin-Priority: 999
 
 ### Install software
-
     - name: Install a list of packages
       become: yes
       apt:
@@ -282,6 +285,7 @@
           - adb
           - ethtool
           - stressapptest
+          - cpufrequtils
 
     - name: Install snaps
       become: yes
@@ -326,7 +330,6 @@
           - passlib[bcrypt]
 
 ### Docker setup
-
     - name: Updating user {{ ansible_env.USER }} to docker group and zsh
       become: yes
       user:
@@ -364,7 +367,6 @@
       when: not vypervpn_cert.stat.exists
 
 ### Install MultiMC
-
     - name: Check if multimc is installed
       command: dpkg-query -W multimc
       register: multimc_check_deb
@@ -388,7 +390,6 @@
         state: absent
 
 ### Install minikube
-#
 #    - name: Check if multimc is installed
 #      command: dpkg-query -W multimc
 #      register: multimc_check_deb
@@ -412,7 +413,6 @@
 #        state: absent
 
 ### Install LSD
-
     - name: Check if LSD is installed
       command: dpkg-query -W lsd
       register: lsd_check_deb
@@ -450,13 +450,11 @@
         state: absent
 
 ### Install ZSH dependencies
-
     - name: Install Antibody
       become: yes
       shell: curl -sfL git.io/antibody | sh -s - -b /usr/local/bin
 
 ### Install steam
-
     - name: Check if Steam is installed
       command: dpkg-query -W steam-launcher
       register: steam_check_deb
