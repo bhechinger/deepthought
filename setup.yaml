@@ -2,6 +2,7 @@
   vars:
     multimc_url: https://files.multimc.org/downloads/
     multimc_file: multimc_1.5-1.deb
+    ko_version: 0.8.3
     limits:
       - domain: "*"
         limit_type: soft
@@ -179,6 +180,7 @@
         - deb [arch=amd64] https://packages.riot.im/debian/ default main
         - "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ focal main"
         - deb https://dl.winehq.org/wine-builds/ubuntu/ {{ ansible_distribution_release }} main
+        - ppa:graphics-drivers/ppa
 
     - name: Add NodeSource stuff
 #      warn: false # why doesn't this work?
@@ -353,18 +355,18 @@
         regexp: '^managed='
         line: managed=true
 
-### Configure VyperVPN
+### Configure VyprVPN
     - name: Task name
       stat:
         path: /etc/openvpn/ca.vyprvpn.com.crt
-      register: vypervpn_cert
+      register: vyprvpn_cert
 
-    - name: Download VyperVPN Cert
+    - name: Download VyprVPN Cert
       become: yes
       get_url:
         url: https://support.vyprvpn.com/hc/article_attachments/360052622052/ca.vyprvpn.com.crt
         dest: /etc/openvpn/ca.vyprvpn.com.crt
-      when: not vypervpn_cert.stat.exists
+      when: not vyprvpn_cert.stat.exists
 
 ### Install MultiMC
     - name: Check if multimc is installed
@@ -389,7 +391,16 @@
         path: "/tmp/{{ multimc_file }}"
         state: absent
 
-### Install minikube
+### Install KO
+    - name: Get KO
+      become: yes
+      unarchive:
+        src: "https://github.com/google/ko/releases/download/v{{ko_version}}/ko_{{ko_version}}_Linux_x86_64.tar.gz"
+        dest: /usr/local/bin
+        remote_src: yes
+        mode: 0755
+
+  ### Install minikube
 #    - name: Check if multimc is installed
 #      command: dpkg-query -W multimc
 #      register: multimc_check_deb
@@ -477,14 +488,14 @@
         path: "/tmp/steam.deb"
         state: absent
 
-#    - name: Mount an NFS volume
-#      become: yes
-#      ansible.posix.mount:
-#        src: //bob.4amlunch.net/NetShare
-#        path: /home/wonko/NetShare
-#        opts: rw,username=wonko,password=brian1978,_netdev,uid=1000,gid=1000
-#        state: mounted
-#        fstype: cifs
+    - name: Mount an NFS volume
+      become: yes
+      ansible.posix.mount:
+        src: //bob.4amlunch.net/NetShare
+        path: /home/wonko/NetShare
+        opts: rw,username=wonko,password=brian1978,_netdev,uid=1000,gid=1000
+        state: mounted
+        fstype: cifs
 
 ### Install GVM and Go
 
