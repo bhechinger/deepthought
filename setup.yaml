@@ -288,6 +288,8 @@
           - ethtool
           - stressapptest
           - cpufrequtils
+          - python3-venv
+          - pipx
 
     - name: Install snaps
       become: yes
