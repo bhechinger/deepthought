@@ -181,6 +181,8 @@
         - "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ focal main"
         - deb https://dl.winehq.org/wine-builds/ubuntu/ {{ ansible_distribution_release }} main
         - ppa:graphics-drivers/ppa
+        - ppa:damentz/liquorix
+        - ppa:kisak/kisak-mesa
 
     - name: Add NodeSource stuff
 #      warn: false # why doesn't this work?
@@ -276,6 +278,8 @@
           - nmap
           - migrate
           - wine-staging
+          - winetricks
+          - nvtop
           - libpkcs11-helper1
           - network-manager-openvpn
           - network-manager-openvpn-gnome
@@ -290,6 +294,17 @@
           - cpufrequtils
           - python3-venv
           - pipx
+          - linux-image-liquorix-amd64
+          - linux-headers-liquorix-amd64
+          - crda
+          - mockgen
+          - lm-sensors
+          - fancontrol
+          - pdftk
+          - xorriso
+          - ocl-icd-opencl-dev
+          - fakeroot
+          - inxi
 
     - name: Install snaps
       become: yes
@@ -332,6 +347,7 @@
           - linode-cli
           - jmespath
           - passlib[bcrypt]
+          - protonup
 
 ### Docker setup
     - name: Updating user {{ ansible_env.USER }} to docker group and zsh
