@@ -1,0 +1,10 @@
+[Unit]
+Description={{ service_description }}
+
+[Service]
+Type=oneshot
+ExecStart=/opt/globalprotect/reinstall.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

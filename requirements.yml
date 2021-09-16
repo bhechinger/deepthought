@@ -10,6 +10,15 @@ roles:
   - src: cloudalchemy.prometheus
   - src: cloudalchemy.grafana
   - src: stefangweichinger.ansible_rclone
+  - src: geerlingguy.postgresql
+  - src: https://github.com/bhechinger/ansible-nsq.git
+    name: ansible-nsq
+    scm: git
+    version: master
+  - src: https://github.com/ansible-community/ansible-consul.git
+    name: ansible-consul
+    scm: git
+    version: master
 
 collections:
   - name: community.general

@@ -1,0 +1,21 @@
+- name: Put Global Protect package file
+  copy:
+    src: files/GlobalProtect_UI_deb-5.1.4.0-9.deb
+    dest: /opt/globalprotect/GlobalProtect_UI_deb-5.1.4.0-9.deb
+    mode: 0644
+
+- name: Put Global Protect re-install script
+  copy:
+    src: files/reinstall.sh
+    dest: /opt/globalprotect/reinstall.sh
+    mode: 0755
+
+- name: Create Global Protect systemd service file
+  template:
+    src: templates/globalprotect.service.j2
+    dest: /lib/systemd/system/globalprotect.service
+
+- name: Start globalprotect service
+  systemd:
+    name: globalprotect
+    state: started
