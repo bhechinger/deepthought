@@ -236,16 +236,6 @@
 #      become: yes
 #      shell: curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
 
-### Pin apps
-#    - name: Pin bazel to 3.7.2 as 4.0 breaks our pre-commit tests
-#      become: yes
-#      copy:
-#        dest: "/etc/apt/preferences.d/bazel"
-#        content: |
-#          Package: bazel
-#          Pin: version 3.7.2
-#          Pin-Priority: 999
-
 ### Install software
     - name: Install a list of packages
       become: yes
