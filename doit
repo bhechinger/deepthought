@@ -3,5 +3,4 @@
 #ansible-galaxy role install -r requirements.yml
 #ansible-galaxy collection install -r requirements.yml
 
-#ansible-playbook --ask-become-pass -e "@secrets.yaml" -e "zerotier_deb_release_repo=buster" setup.yaml
 ansible-playbook --ask-become-pass -e "@secrets.yaml" -i inventory.yml setup.yaml

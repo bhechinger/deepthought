@@ -1,7 +1,7 @@
 - name: Put Global Protect package file
   copy:
-    src: files/GlobalProtect_UI_deb-5.1.4.0-9.deb
-    dest: /opt/globalprotect/GlobalProtect_UI_deb-5.1.4.0-9.deb
+    src: files/GlobalProtect_UI_deb-5.3.0.0-32.deb
+    dest: /opt/globalprotect/GlobalProtect_UI_deb-5.3.0.0-32.deb
     mode: 0644
 
 - name: Put Global Protect re-install script
