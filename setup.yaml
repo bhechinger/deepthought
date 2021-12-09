@@ -38,8 +38,8 @@
         value: 65535
 
   roles:
-    - role: globalprotect
-      become: true
+#    - role: globalprotect
+#      become: true
     - role: patrick-hill.franz
       vars:
         franz_version: 5.6.1
@@ -183,6 +183,10 @@
           GOVERNOR="performance"
 
 ### Add APT keys and repos
+    - name: add i386 architecture
+      command: dpkg --add-architecture i386
+      become: yes
+
     - name: Add apt signing keys
       become: yes
       apt_key:
@@ -201,6 +205,7 @@
         - https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA
         - https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf77f1eda57ebb1cc
         - https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
+        - https://aquasecurity.github.io/trivy-repo/deb/public.key
 
     - name: Add apt repositories into sources list
       become: yes
@@ -213,19 +218,21 @@
         - deb https://baltocdn.com/helm/stable/debian/ all main
         - deb https://apt.kubernetes.io/ kubernetes-xenial main
         - ppa:lutris-team/lutris
-        - ppa:git-core/ppa ## This is broken for hirsute
+        - ppa:git-core/ppa
         - ppa:yubico/stable
         - deb [arch=amd64] https://packages.riot.im/debian/ default main
         - deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ focal main
         - deb https://dl.winehq.org/wine-builds/ubuntu/ {{ ansible_distribution_release }} main
         - ppa:graphics-drivers/ppa
-        - ppa:damentz/liquorix
         - ppa:kisak/kisak-mesa
         - deb https://repo.jotta.us/debian debian main
         - deb [arch=amd64] https://apt.releases.hashicorp.com focal main
         - ppa:apt-fast/stable
         - deb http://ppa.launchpad.net/rabbitmq/rabbitmq-erlang/ubuntu focal main
         - deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ focal main
+        - deb https://aquasecurity.github.io/trivy-repo/deb focal main
+        - ppa:gns3/ppa
+#        - ppa:linuxuprising/java
 
     - name: Add NodeSource stuff
 #      warn: false # why doesn't this work?
@@ -310,7 +317,7 @@
           - audacious
           - nmap
           - migrate
-          - wine-staging
+          - winehq-staging
           - winetricks
           - nvtop
           - libpkcs11-helper1
@@ -327,8 +334,6 @@
           - cpufrequtils
           - python3-venv
           - pipx
-          - linux-image-liquorix-amd64
-          - linux-headers-liquorix-amd64
           - crda
           - mockgen
           - lm-sensors
@@ -367,6 +372,14 @@
           - erlang-tools
           - erlang-xmerl
           - rabbitmq-server
+          - trivy
+          - gns3-gui
+          - gns3-server
+          - gns3-iou
+          - samba
+          - vde2
+          - psensor
+#          - oracle-java17-installer
 
     - name: Install snaps
       become: yes
@@ -384,6 +397,7 @@
           - yubioath-desktop
           - irccloud
           - yq
+          - doctl
 
     - name: Install snaps (edge)
       become: yes
@@ -428,6 +442,20 @@
         name: docker
         state: started
         enabled: yes
+
+### Snap Package configuration
+    - name: Snap Packages - Setup Plugs
+      become: yes
+      become_method: sudo
+      changed_when: false
+      shell: 'snap connect {{ item.app }}:{{ item.plug }}'
+      with_items:
+        - plug: kube-config
+          app: doctl
+        - plug: dot-docker
+          app: doctl
+        - plug: "ssh-keys :ssh-keys"
+          app: doctl
 
 ### Fix Network Manager
     - name: Tweak Network Manager
@@ -716,7 +744,7 @@
             configure_priv: .*
             read_priv: .*
             write_priv: .*
-          - vhost: net.4amlunch.devt
+          - vhost: net.4amlunch.dev
             configure_priv: .*
             read_priv: .*
             write_priv: .*
