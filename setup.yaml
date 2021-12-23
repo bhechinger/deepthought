@@ -232,6 +232,7 @@
         - deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ focal main
         - deb https://aquasecurity.github.io/trivy-repo/deb focal main
         - ppa:gns3/ppa
+        - ppa:apandada1/xournalpp-stable
 #        - ppa:linuxuprising/java
 
     - name: Add NodeSource stuff
@@ -379,6 +380,26 @@
           - samba
           - vde2
           - psensor
+          - build-essential
+          - qtcreator
+          - qtbase5-dev
+          - qtchooser
+          - qt5-qmake
+          - qtbase5-dev-tools
+          - libusb-1.0-0-dev
+          - libhidapi-dev
+          - pkgconf
+          - libmbedtls-dev
+          - xdotool
+          - xournalpp
+          - texlive-latex-extra
+          - samba
+          - smbclient
+          - winbind
+          - libpam-winbind
+          - libnss-winbind
+          - krb5-kdc
+          - libpam-krb5
 #          - oracle-java17-installer
 
     - name: Install snaps
