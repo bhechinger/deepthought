@@ -3,6 +3,8 @@
 ## Native Instruments
 Wine version: 6.0
 
+NOTE: While these do work you can't install the Bome Virtual MIDI package (it installs drivers which you can't do in Wine) which is a requirement for all of their hardware devices so controllers don't (and probably won't ever) work.
+
 ```
 export WINEPREFIX=~/Documents/NativeInstruments
 wine Native\ Access\ 1.13.3\ Setup\ PC.exe
