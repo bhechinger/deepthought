@@ -1,8 +1,8 @@
 - hosts: all
   vars:
     multimc_url: https://files.multimc.org/downloads/
-    multimc_file: multimc_1.5-1.deb
-    ko_version: 0.8.3
+    multimc_file: multimc_1.6-1.deb
+    ko_version: 0.9.3
     limits:
       - domain: "*"
         limit_type: soft
@@ -38,11 +38,12 @@
         value: 65535
 
   roles:
+# I'm no longer with the client who used globalprotect
 #    - role: globalprotect
 #      become: true
     - role: patrick-hill.franz
       vars:
-        franz_version: 5.6.1
+        franz_version: 5.7.0
     - role: ansible-role-keybase
       become: yes
     - role: oefenweb.dropbox
@@ -74,7 +75,7 @@
     - role: ansible-consul
       become: yes
       vars:
-        consul_version: 1.10.2
+        consul_version: 1.11.2
         consul_datacenter: linode
         consul_client_address: 0.0.0.0
         consul_install_upgrade: true
@@ -227,7 +228,6 @@
         - ppa:kisak/kisak-mesa
         - deb https://repo.jotta.us/debian debian main
         - deb [arch=amd64] https://apt.releases.hashicorp.com focal main
-        - ppa:apt-fast/stable
         - deb http://ppa.launchpad.net/rabbitmq/rabbitmq-erlang/ubuntu focal main
         - deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ focal main
         - deb https://aquasecurity.github.io/trivy-repo/deb focal main
@@ -256,7 +256,6 @@
           - docker-ce
           - docker-ce-cli
           - containerd.io
-          - quassel-client
           - git
           - git-lfs
           - git-extras
@@ -325,7 +324,6 @@
           - network-manager-openvpn
           - network-manager-openvpn-gnome
           - openvpn
-          - winbind
           - nginx
           - colordiff
           - python-is-python3
@@ -347,7 +345,6 @@
           - jotta-cli
           - vulkan-tools
           - nomad
-          - apt-fast
           - automake
           - autotools-dev
           - libiberty-dev
@@ -531,29 +528,6 @@
         remote_src: yes
         mode: 0755
 
-### Install minikube
-#    - name: Check if multimc is installed
-#      command: dpkg-query -W multimc
-#      register: multimc_check_deb
-#      failed_when: multimc_check_deb.rc > 1
-#      changed_when: multimc_check_deb.rc == 1
-#
-#    - name: Download multimc
-#      get_url:
-#        url: "{{ multimc_url }}/{{ multimc_file }}"
-#        dest: "/tmp/{{ multimc_file }}"
-#      when: multimc_check_deb.rc == 1
-#
-#    - name: Install multimc
-#      become: yes
-#      apt: deb="/tmp/{{ multimc_file }}"
-#      when: multimc_check_deb.rc == 1
-#
-#    - name: Remove multimc installer file
-#      ansible.builtin.file:
-#        path: "/tmp/{{ multimc_file }}"
-#        state: absent
-
 ### Install LSD
     - name: Check if LSD is installed
       command: dpkg-query -W lsd
@@ -619,16 +593,15 @@
         path: "/tmp/steam.deb"
         state: absent
 
+### Mount netshare
     - name: Mount an NFS volume
       become: yes
       ansible.posix.mount:
         src: //bob.4amlunch.net/NetShare
-        path: /home/wonko/NetShare
-        opts: rw,username=wonko,password=brian1978,_netdev,uid=1000,gid=1000
+        path: "/home/{{ domain_user }}/NetShare"
+        opts: "rw,username={{ domain_user }},password={{ domain_password }},_netdev,uid=1000,gid=1000"
         state: mounted
         fstype: cifs
-
-### Install GVM and Go
 
 ### Setup nVidia Exporter
 #    - name: Install nvidia-exporter binary (assuming already built)
@@ -684,7 +657,7 @@
 #        name: jack-exporter
 
 ### Setup nginx
-    - name: Create a directory if it does not exist
+    - name: Create nginx ssl directory
       become: yes
       file:
         path: /etc/ssl/self
@@ -737,7 +710,7 @@
       become: yes
 
 ### Setup RabbitMQ
-    - name: Enables the rabbitmq_management plugin
+    - name: Enables the rabbitmq_managemenut plugin
       become: yes
       rabbitmq_plugin:
         names: rabbitmq_management
