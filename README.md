@@ -1,5 +1,10 @@
 # deepthought
 
+This is a bit of ansible to setup my linux desktop. This has come in very useful every time I needed to rebuild my machine (which for reasons I have had to several times over the last couple years).
+
+`setup.sh` can be used to bootstrap a freshly installed machine.
+`doit` is what's used for just running ansible for changes.
+
 ## Native Instruments
 Wine version: 6.0
 
