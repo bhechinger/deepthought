@@ -131,7 +131,14 @@
       register: inotify
 
 ### Set the thing
-    ### echo 0 to /proc/sys/kernel/yama/ptrace_scope
+    - name: Set ptrace scope
+      become: yes
+      lineinfile:
+        path: "/etc/sysctl.d/10-ptrace.conf"
+        regexp: "^kernel.yama.ptrace_scope"
+        line: "kernel.yama.ptrace_scope = 0"
+      register: ptrace
+
 ### Set open files stuff for app requirements
     - name: Set file max
       become: yes
@@ -144,7 +151,7 @@
     - name: run sysctl
       become: yes
       command: sysctl -p
-      when: inotify.changed or filemax.changed
+      when: inotify.changed or filemax.changed or ptrace.changed
 
     - name: Add or modify nproc soft limit for the user root. Keep or set the maximal value.
       become: yes
@@ -509,27 +516,27 @@
       when: not vyprvpn_cert.stat.exists
 
 ### Install MultiMC
-#    - name: Check if multimc is installed
-#      command: dpkg-query -W multimc
-#      register: multimc_check_deb
-#      failed_when: multimc_check_deb.rc > 1
-#      changed_when: multimc_check_deb.rc == 1
-#
-#    - name: Download multimc
-#      get_url:
-#        url: "{{ multimc_url }}/{{ multimc_file }}"
-#        dest: "/tmp/{{ multimc_file }}"
-#      when: multimc_check_deb.rc == 1
-#
-#    - name: Install multimc
-#      become: yes
-#      apt: deb="/tmp/{{ multimc_file }}"
-#      when: multimc_check_deb.rc == 1
-#
-#    - name: Remove multimc installer file
-#      ansible.builtin.file:
-#        path: "/tmp/{{ multimc_file }}"
-#        state: absent
+    - name: Check if multimc is installed
+      command: dpkg-query -W multimc
+      register: multimc_check_deb
+      failed_when: multimc_check_deb.rc > 1
+      changed_when: multimc_check_deb.rc == 1
+
+    - name: Download multimc
+      get_url:
+        url: "{{ multimc_url }}/{{ multimc_file }}"
+        dest: "/tmp/{{ multimc_file }}"
+      when: multimc_check_deb.rc | default('') == 1
+
+    - name: Install multimc
+      become: yes
+      apt: deb="/tmp/{{ multimc_file }}"
+      when: multimc_check_deb.rc | default('') == 1
+
+    - name: Remove multimc installer file
+      ansible.builtin.file:
+        path: "/tmp/{{ multimc_file }}"
+        state: absent
 
 ### Install KO
     - name: Get KO
@@ -541,43 +548,41 @@
         mode: 0755
 
 ### Install LSD
-#    - name: Check if LSD is installed
-#      command: dpkg-query -W lsd
-#      register: lsd_check_deb
-#      failed_when: lsd_check_deb.rc > 1
-#      changed_when: lsd_check_deb.rc == 1
-#
-#    - name: Download LSD github release json
-#      uri:
-#        url: https://api.github.com/repos/Peltoche/lsd/releases/latest
-#        return_content: true
-#      register: lsd_reponse
-#      when: lsd_check_deb.rc == 1
-#
-#    - name: Filter github reply for LSD
-#      set_fact:
-#        lsd_url: "{{ item }}"
-#      with_items:
-#        - "{{ lsd_reponse.json | community.general.json_query(json_filter) }}"
-#      vars:
-#        - json_filter: assets[?ends_with(name, 'amd64.deb') && !contains(name, 'musl')].browser_download_url
-#      when: lsd_check_deb.rc == 1
-#
-#    - name: Get LSD
-#      get_url:
-#        url: "{{ lsd_url }}"
-#        dest: "/tmp/lsd.deb"
-#      when: lsd_check_deb.rc == 1
-#
-#    - name: Install LSD
-#      become: yes
-#      apt: deb="/tmp/lsd.deb"
-#      when: lsd_check_deb.rc == 1
-#
-#    - name: Remove LSD installer file
-#      ansible.builtin.file:
-#        path: "/tmp/lsd.deb"
-#        state: absent
+    - name: Check if LSD is installed
+      command: dpkg-query -W lsd
+      register: lsd_check_deb
+      failed_when: lsd_check_deb.rc > 1
+      changed_when: lsd_check_deb.rc == 1
+
+    - name: Download LSD github release json
+      uri:
+        url: https://api.github.com/repos/Peltoche/lsd/releases/latest
+        return_content: true
+      register: lsd_reponse
+      when: lsd_check_deb.rc | default('') == 1
+
+    - name: Filter github reply for LSD
+      set_fact:
+        lsd_url: "{{ lsd_reponse.json | community.general.json_query(json_filter) }}"
+      vars:
+        - json_filter: assets[?ends_with(name, 'amd64.deb') && !contains(name, 'musl')].browser_download_url
+      when: lsd_check_deb.rc | default('') == 1
+
+    - name: Get LSD
+      get_url:
+        url: "{{ lsd_url }}"
+        dest: "/tmp/lsd.deb"
+      when: lsd_check_deb.rc | default('') == 1
+
+    - name: Install LSD
+      become: yes
+      apt: deb="/tmp/lsd.deb"
+      when: lsd_check_deb.rc | default('') == 1
+
+    - name: Remove LSD installer file
+      ansible.builtin.file:
+        path: "/tmp/lsd.deb"
+        state: absent
 
 ### Install ZSH dependencies
     - name: Install Antibody
@@ -595,12 +600,12 @@
       get_url:
         url: https://cdn.cloudflare.steamstatic.com/client/installer/steam.deb
         dest: "/tmp/steam.deb"
-      when: steam_check_deb.rc == 1
+      when: steam_check_deb.rc | default('') == 1
 
     - name: Install Steam
       become: yes
       apt: deb="/tmp/steam.deb"
-      when: steam_check_deb.rc == 1
+      when: steam_check_deb.rc | default('') == 1
 
     - name: Remove Steam installer file
       ansible.builtin.file:
