@@ -227,6 +227,14 @@
         state: directory
         mode: '0755'
 
+### gpg is dumb and won't create this directory automatically
+    - name: create GPG dir for root
+      become: yes
+      file:
+        path: /root/.gnupg
+        state: directory
+        mode: '0700'
+
 ### Add APT keys and repos
     - name: add i386 architecture
       command: dpkg --add-architecture i386
