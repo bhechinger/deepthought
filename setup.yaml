@@ -130,7 +130,7 @@
           fs.inotify.max_user_instances = 256
       register: inotify
 
-### Set the thing
+### Set ptrace scope
     - name: Set ptrace scope
       become: yes
       lineinfile:
@@ -138,6 +138,30 @@
         regexp: "^kernel.yama.ptrace_scope"
         line: "kernel.yama.ptrace_scope = 0"
       register: ptrace
+
+### Disable netfilter for bridges
+    - name: Disable netfilter for bridges
+      become: yes
+      copy:
+        dest: "/etc/sysctl.d/99-netfilter-bridge.conf"
+        content: |
+          net.bridge.bridge-nf-call-ip6tables = 0
+          net.bridge.bridge-nf-call-iptables = 0
+          net.bridge.bridge-nf-call-arptables = 0
+      register: netfilter
+
+    - name: Load br_netfilter kernel module
+      become: yes
+      copy:
+        dest: "/etc/modules-load.d/br_netfilter.conf"
+        content: |
+          br_netfilter
+      register: netfilter_kmod
+
+    - name: load br_netfilter
+      become: yes
+      command: modprobe br_netfilter
+      when: netfilter_kmod.changed
 
 ### Set open files stuff for app requirements
     - name: Set file max
@@ -148,10 +172,11 @@
           fs.file-max = 524288
       register: filemax
 
+### Run sysctl if needed
     - name: run sysctl
       become: yes
       command: sysctl -p
-      when: inotify.changed or filemax.changed or ptrace.changed
+      when: inotify.changed or filemax.changed or ptrace.changed or netfilter.changed
 
     - name: Add or modify nproc soft limit for the user root. Keep or set the maximal value.
       become: yes
@@ -501,6 +526,19 @@
         path: /etc/NetworkManager/NetworkManager.conf
         regexp: '^managed='
         line: managed=true
+
+### Setup secondary network interface for KVM
+    - name: copy netplan config
+      become: yes
+      copy:
+        src: files/01-network-manager-all.yaml
+        dest: /etc/netplan/01-network-manager-all.yaml
+      register: netplan
+
+    - name: apply netplan config
+      become: true
+      command: netplan apply
+      when: netplan.changed
 
 ### Configure VyprVPN
     - name: Check if VyperVPN cert has been downloaded

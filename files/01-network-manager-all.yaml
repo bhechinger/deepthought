@@ -1,0 +1,35 @@
+# Let NetworkManager manage all devices on this system
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    enp5s0:
+      dhcp4: false
+  vlans:
+    vlan.100:
+      id: 100
+      link: enp5s0
+    vlan.410:
+      id: 410
+      link: enp5s0
+    vlan.420:
+      id: 420
+      link: enp5s0
+
+  bridges:
+    management:
+      dhcp4: false
+      interfaces:
+        - enp5s0
+    external:
+      dhcp4: false
+      interfaces:
+        - vlan.100
+    guest:
+      dhcp4: false
+      interfaces:
+        - vlan.410
+    internal:
+      dhcp4: false
+      interfaces:
+        - vlan.420
