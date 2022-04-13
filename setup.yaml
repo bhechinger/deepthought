@@ -242,6 +242,7 @@
         - https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf77f1eda57ebb1cc
         - https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
         - https://aquasecurity.github.io/trivy-repo/deb/public.key
+        - https://downloads.1password.com/linux/keys/1password.asc
 
     - name: Add an apt key by id from a keyserver
       ansible.builtin.apt_key:
@@ -274,6 +275,7 @@
         - ppa:gns3/ppa
         - ppa:apandada1/xournalpp-stable
         - deb https://dl.k6.io/deb stable main
+        - deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 stable main
 #        - ppa:linuxuprising/java
 
     - name: Add NodeSource stuff
@@ -440,6 +442,7 @@
           - clang
           - htop
           - k6
+          - 1password
 #          - oracle-java17-installer
 
     - name: Install snaps
@@ -459,13 +462,6 @@
           - irccloud
           - yq
           - doctl
-
-    - name: Install snaps (edge)
-      become: yes
-      community.general.snap:
-        channel: latest/edge
-        name:
-          - 1password
 
     - name: Install snaps (classic)
       become: yes
