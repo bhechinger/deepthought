@@ -130,6 +130,8 @@
           fs.inotify.max_user_instances = 256
       register: inotify
 
+### Set the thing
+    ### echo 0 to /proc/sys/kernel/yama/ptrace_scope
 ### Set open files stuff for app requirements
     - name: Set file max
       become: yes
@@ -209,6 +211,11 @@
         - https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
         - https://aquasecurity.github.io/trivy-repo/deb/public.key
 
+    - name: Add an apt key by id from a keyserver
+      ansible.builtin.apt_key:
+        keyserver: keyserver.ubuntu.com
+        id: C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+
     - name: Add apt repositories into sources list
       become: yes
       apt_repository:
@@ -234,6 +241,7 @@
         - deb https://aquasecurity.github.io/trivy-repo/deb focal main
         - ppa:gns3/ppa
         - ppa:apandada1/xournalpp-stable
+        - deb https://dl.k6.io/deb stable main
 #        - ppa:linuxuprising/java
 
     - name: Add NodeSource stuff
@@ -399,6 +407,7 @@
           - libpam-krb5
           - clang
           - htop
+          - k6
 #          - oracle-java17-installer
 
     - name: Install snaps
