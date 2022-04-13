@@ -3,6 +3,7 @@
     multimc_url: https://files.multimc.org/downloads/
     multimc_file: multimc_1.6-1.deb
     ko_version: 0.9.3
+    keyrings_location: /usr/local/share/keyrings
     limits:
       - domain: "*"
         limit_type: soft
@@ -218,6 +219,14 @@
         content: |
           GOVERNOR="performance"
 
+### Make sure keyrings location exists:
+    - name: Ensure keyrings location exists
+      become: yes
+      file:
+        path: "{{ keyrings_location }}"
+        state: directory
+        mode: '0755'
+
 ### Add APT keys and repos
     - name: add i386 architecture
       command: dpkg --add-architecture i386
@@ -244,10 +253,11 @@
         - https://aquasecurity.github.io/trivy-repo/deb/public.key
         - https://downloads.1password.com/linux/keys/1password.asc
 
-    - name: Add an apt key by id from a keyserver
-      ansible.builtin.apt_key:
-        keyserver: keyserver.ubuntu.com
-        id: C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+    - name: Add apt keys using gpg keyrings_location
+      become: yes
+      command: "gpg --no-default-keyring --keyring {{ keyrings_location }}/{{ item.keyring }}.gpg --keyserver {{ item.keyserver }} --recv-keys {{ item.keyID }}"
+      with_items:
+        -  { keyring: k6, keyserver: keyserver.ubuntu.com, keyID: C5AD17C747E3415A3642D57D77C6C491D6AC1D69 }
 
     - name: Add apt repositories into sources list
       become: yes
@@ -275,6 +285,7 @@
         - ppa:gns3/ppa
         - ppa:apandada1/xournalpp-stable
         - deb https://dl.k6.io/deb stable main
+        - "deb [arch=amd64 signed-by={{ keyrings_location }}/k6.gpg] https://dl.k6.io/deb stable main"
         - deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 stable main
 #        - ppa:linuxuprising/java
 
