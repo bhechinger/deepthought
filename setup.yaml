@@ -443,6 +443,7 @@
           - htop
           - k6
           - 1password
+          - python3-pip
 #          - oracle-java17-installer
 
     - name: Install snaps
