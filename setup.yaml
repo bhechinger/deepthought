@@ -747,6 +747,12 @@
         name: net.4amlunch.dev
         state: present
 
+    - name: "RabbitMQ create hecnet vhost"
+      become: yes
+      rabbitmq_vhost:
+        name: hecnet
+        state: present
+
     - name: "RabbitMQ: Add user wonko (admin)"
       become: yes
       rabbitmq_user:
@@ -761,6 +767,10 @@
             configure_priv: .*
             read_priv: .*
             write_priv: .*
+          - vhost: hecnet
+            configure_priv: .*
+            read_priv: .*
+            write_priv: .*
         state: present
         tags: "administrator"
 
@@ -772,6 +782,19 @@
         password: "{{ rabbitmq_chremoas_dev_password }}"
         permissions:
           - vhost: net.4amlunch.dev
+            configure_priv: .*
+            read_priv: .*
+            write_priv: .*
+        state: present
+
+#### Setup tunnel_manager dev stuff
+    - name: "RabbitMQ: Add user hecnet"
+      become: yes
+      rabbitmq_user:
+        user: hecnet
+        password: "{{ tunnel_manager_password }}"
+        permissions:
+          - vhost: hecnet
             configure_priv: .*
             read_priv: .*
             write_priv: .*
