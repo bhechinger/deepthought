@@ -4,6 +4,7 @@
     multimc_file: multimc_1.6-1.deb
     ko_version: 0.9.3
     keyrings_location: /usr/local/share/keyrings
+    keyrings_temp: /tmp/ansible.keyrings
     limits:
       - domain: "*"
         limit_type: soft
@@ -37,11 +38,59 @@
         limit_type: hard
         limit_item: nofile
         value: 65535
+    repo_items:
+      - { keyring: trivy,
+          url: https://aquasecurity.github.io/trivy-repo/deb/public.key,
+          repo: "deb [signed-by={{ keyrings_location }}/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb focal main" }
+      - { keyring: bazel,
+          url: https://bazel.build/bazel-release.pub.gpg,
+          repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/bazel.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8" }
+      - { keyring: docker,
+          url: https://download.docker.com/linux/ubuntu/gpg,
+          repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/docker.gpg] https://download.docker.com/linux/ubuntu bionic stable" }
+      - { keyring: helm,
+          url: https://baltocdn.com/helm/signing.asc,
+          repo: "deb [signed-by={{ keyrings_location }}/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" }
+      - { keyring: google,
+          url: https://packages.cloud.google.com/apt/doc/apt-key.gpg,
+          repo: "deb [signed-by={{ keyrings_location }}/google.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" }
+      - { keyring: riot,
+          url: https://packages.riot.im/debian/riot-im-archive-keyring.gpg,
+          repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/riot.gpg] https://packages.riot.im/debian/ default main" }
+      - { keyring: golang-migrate,
+          url: https://packagecloud.io/golang-migrate/migrate/gpgkey,
+          repo: "deb [signed-by={{ keyrings_location }}/golang-migrate.gpg] https://packagecloud.io/golang-migrate/migrate/ubuntu/ focal main" }
+      - { keyring: wine,
+          url: https://dl.winehq.org/wine-builds/winehq.key,
+          repo: "deb [signed-by={{ keyrings_location }}/wine.gpg] https://dl.winehq.org/wine-builds/ubuntu/ {{ ansible_distribution_release }} main" }
+      - { keyring: jotta,
+          url: https://repo.jotta.us/public.gpg,
+          repo: "deb [signed-by={{ keyrings_location }}/jotta.gpg] https://repo.jotta.us/debian debian main" }
+      - { keyring: hashicorp,
+          url: https://apt.releases.hashicorp.com/gpg,
+          repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/hashicorp.gpg] https://apt.releases.hashicorp.com impish main" }
+      - { keyring: io.packagecloud.rabbitmq,
+          url: https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey,
+          repo: "deb [signed-by={{ keyrings_location }}/io.packagecloud.rabbitmq.gpg] https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ focal main" }
+      - { keyring: net.launchpad.ppa.rabbitmq.erlang,
+          url: "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf77f1eda57ebb1cc",
+        repo: "deb [signed-by={{ keyrings_location }}/net.launchpad.ppa.rabbitmq.erlang.gpg] http://ppa.launchpad.net/rabbitmq/rabbitmq-erlang/ubuntu focal main" }
+      - { keyring: 1password,
+          url: https://downloads.1password.com/linux/keys/1password.asc,
+          repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/1password.gpg] https://downloads.1password.com/linux/debian/amd64 stable main" }
+      - { repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/k6.gpg] https://dl.k6.io/deb stable main" }
+      - { repo: ppa:lutris-team/lutris }
+      - { repo: ppa:git-core/ppa }
+      - { repo: ppa:yubico/stable }
+      - { repo: ppa:graphics-drivers/ppa }
+      - { repo: ppa:kisak/kisak-mesa }
+      - { repo: ppa:gns3/ppa }
+      - { repo: ppa:apandada1/xournalpp-stable }
+    apt_keys:
+      -  { keyring: k6, keyserver: keyserver.ubuntu.com, keyID: C5AD17C747E3415A3642D57D77C6C491D6AC1D69 }
+      -  { keyring: com.rabbitmq.team, keyserver: keys.openpgp.org, keyID: 0A9AF2115F4687BD29803A206B73A36E6026DFCA }
 
   roles:
-# I'm no longer with the client who used globalprotect
-#    - role: globalprotect
-#      become: true
     - role: patrick-hill.franz
       vars:
         franz_version: 5.7.0
@@ -82,43 +131,6 @@
         consul_client_address: 0.0.0.0
         consul_install_upgrade: true
         consul_node_role: bootstrap
-
-#    - role: cloudalchemy.node_exporter
-#      become: yes
-#      vars:
-#        node_exporter_enabled_collectors:
-#          - systemd
-#          - processes
-#    - role: cloudalchemy.prometheus
-#      become: yes
-#      vars:
-#        prometheus_targets:
-#          node:
-#            - targets:
-#                - localhost:9100
-#                - localhost:9401
-#                - localhost:9402
-#              labels:
-#                env: deepthought
-#    - name: cloudalchemy.grafana
-#      become: yes
-#      vars:
-#        grafana_security:
-#          admin_user: wonko
-#          admin_password: "{{ grafana_password }}"
-#        grafana_datasources:
-#          - name: prometheus
-#            type: prometheus
-#            access: proxy
-#            url: 'http://localhost:9090'
-#            basicAuth: false
-#        grafana_dashboards:
-#          - dashboard_id: 1860
-#            revision_id: 1
-#            datasource: prometheus
-#          - dashboard_id: 6387
-#            revision_id: 1
-#            datasource: prometheus
 
   tasks:
 ### Set inotify watches for JetBrains
@@ -227,6 +239,7 @@
         state: directory
         mode: '0755'
 
+
 ### gpg is dumb and won't create this directory automatically
     - name: create GPG dir for root
       become: yes
@@ -240,62 +253,47 @@
       command: dpkg --add-architecture i386
       become: yes
 
-    - name: Add apt signing keys
+    # Make sure keyrings temp location exists:
+    - name: Ensure temp keyrings location exists
       become: yes
-      apt_key:
-        url: "{{ item }}"
-        state: present
-      with_items:
-        - https://bazel.build/bazel-release.pub.gpg
-        - https://download.docker.com/linux/ubuntu/gpg
-        - https://baltocdn.com/helm/signing.asc
-        - https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        - https://packages.riot.im/debian/riot-im-archive-keyring.gpg
-        - https://packagecloud.io/golang-migrate/migrate/gpgkey
-        - https://dl.winehq.org/wine-builds/winehq.key
-        - https://repo.jotta.us/public.gpg
-        - https://apt.releases.hashicorp.com/gpg
-        - https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA
-        - https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf77f1eda57ebb1cc
-        - https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey
-        - https://aquasecurity.github.io/trivy-repo/deb/public.key
-        - https://downloads.1password.com/linux/keys/1password.asc
+      file:
+        path: "{{ keyrings_temp }}"
+        state: directory
+        mode: '0755'
 
-    - name: Add apt keys using gpg keyrings_location
+    - name: Download keys
+      become: yes
+      get_url:
+        url: "{{ item.url }}"
+        dest: "{{ keyrings_temp }}/{{ item.keyring }}.key"
+      loop: "{{ repo_items }}"
+      when: item.url is defined and item.keyring is defined
+
+    - name: Add apt keys using gpg keyrings_location from keyserver
+      become: yes
+      command: "gpg --no-default-keyring --keyring {{ keyrings_location }}/{{ item.keyring }}.gpg --import {{ keyrings_temp }}/{{ item.keyring }}.key"
+      loop: "{{ repo_items }}"
+      when: item.url is defined and item.keyring is defined
+
+    # Remove temp keyrings location
+    - name: Remove temp keyrings location
+      become: yes
+      file:
+        path: "{{ keyrings_temp }}"
+        state: absent
+
+    - name: Add apt keys directly from the keyserver
       become: yes
       command: "gpg --no-default-keyring --keyring {{ keyrings_location }}/{{ item.keyring }}.gpg --keyserver {{ item.keyserver }} --recv-keys {{ item.keyID }}"
-      with_items:
-        -  { keyring: k6, keyserver: keyserver.ubuntu.com, keyID: C5AD17C747E3415A3642D57D77C6C491D6AC1D69 }
+      loop: "{{ apt_keys }}"
 
     - name: Add apt repositories into sources list
       become: yes
       apt_repository:
-        repo: "{{ item }}"
+        repo: "{{ item.repo }}"
         state: present
-      with_items:
-        - deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8
-        - deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
-        - deb https://baltocdn.com/helm/stable/debian/ all main
-        - deb https://apt.kubernetes.io/ kubernetes-xenial main
-        - ppa:lutris-team/lutris
-        - ppa:git-core/ppa
-        - ppa:yubico/stable
-        - deb [arch=amd64] https://packages.riot.im/debian/ default main
-        - deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ focal main
-        - deb https://dl.winehq.org/wine-builds/ubuntu/ {{ ansible_distribution_release }} main
-        - ppa:graphics-drivers/ppa
-        - ppa:kisak/kisak-mesa
-        - deb https://repo.jotta.us/debian debian main
-        - deb [arch=amd64] https://apt.releases.hashicorp.com impish main
-        - deb http://ppa.launchpad.net/rabbitmq/rabbitmq-erlang/ubuntu focal main
-        - deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ focal main
-        - deb https://aquasecurity.github.io/trivy-repo/deb focal main
-        - ppa:gns3/ppa
-        - ppa:apandada1/xournalpp-stable
-        - deb https://dl.k6.io/deb stable main
-        - "deb [arch=amd64 signed-by={{ keyrings_location }}/k6.gpg] https://dl.k6.io/deb stable main"
-        - deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 stable main
-#        - ppa:linuxuprising/java
+      loop: "{{ repo_items }}"
+      when: item.repo is defined
 
     - name: Add NodeSource stuff
 #      warn: false # why doesn't this work?
@@ -463,6 +461,7 @@
           - k6
           - 1password
           - python3-pip
+          - k4dirstat
 #          - oracle-java17-installer
 
     - name: Install snaps
@@ -501,7 +500,7 @@
           - linode-cli
           - jmespath
           - passlib[bcrypt]
-          - protonup
+          - protonup-ng
           - qmk
           - bpytop
 
