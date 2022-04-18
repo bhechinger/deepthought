@@ -296,10 +296,11 @@
       loop: "{{ repo_items }}"
       when: item.repo is defined
 
-    - name: Add NodeSource stuff
-#      warn: false # why doesn't this work?
-      become: yes
-      shell: curl -sL https://deb.nodesource.com/setup_14.x | bash -
+# NodeSource doesn't currently support jammy
+#    - name: Add NodeSource stuff
+##      warn: false # why doesn't this work?
+#      become: yes
+#      shell: curl -sL https://deb.nodesource.com/setup_14.x | bash -
 
     - name: Install CircleCI CLI
       become: yes
