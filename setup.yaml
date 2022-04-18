@@ -69,12 +69,6 @@
       - { keyring: hashicorp,
           url: https://apt.releases.hashicorp.com/gpg,
           repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/hashicorp.gpg] https://apt.releases.hashicorp.com impish main" }
-      - { keyring: io.packagecloud.rabbitmq,
-          url: https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey,
-          repo: "deb [signed-by={{ keyrings_location }}/io.packagecloud.rabbitmq.gpg] https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ focal main" }
-      - { keyring: net.launchpad.ppa.rabbitmq.erlang,
-          url: "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xf77f1eda57ebb1cc",
-        repo: "deb [signed-by={{ keyrings_location }}/net.launchpad.ppa.rabbitmq.erlang.gpg] http://ppa.launchpad.net/rabbitmq/rabbitmq-erlang/ubuntu focal main" }
       - { keyring: 1password,
           url: https://downloads.1password.com/linux/keys/1password.asc,
           repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/1password.gpg] https://downloads.1password.com/linux/debian/amd64 stable main" }
@@ -89,7 +83,6 @@
       - { repo: ppa:apandada1/xournalpp-stable }
     apt_keys:
       -  { keyring: k6, keyserver: keyserver.ubuntu.com, keyID: C5AD17C747E3415A3642D57D77C6C491D6AC1D69 }
-      -  { keyring: com.rabbitmq.team, keyserver: keys.openpgp.org, keyID: 0A9AF2115F4687BD29803A206B73A36E6026DFCA }
 
   roles:
     - role: patrick-hill.franz
@@ -395,7 +388,7 @@
           - cpufrequtils
           - python3-venv
           - pipx
-          - crda
+#          - crda
           - lm-sensors
           - fancontrol
           - pdftk
@@ -413,23 +406,6 @@
           - libssl-dev
           - libudev-dev
           - debhelper
-          - erlang-base
-          - erlang-asn1
-          - erlang-crypto
-          - erlang-eldap
-          - erlang-ftp
-          - erlang-inets
-          - erlang-mnesia
-          - erlang-os-mon
-          - erlang-parsetools
-          - erlang-public-key
-          - erlang-runtime-tools
-          - erlang-snmp
-          - erlang-ssl
-          - erlang-syntax-tools
-          - erlang-tftp
-          - erlang-tools
-          - erlang-xmerl
           - rabbitmq-server
           - trivy
           - gns3-gui
