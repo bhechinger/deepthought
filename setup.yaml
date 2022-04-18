@@ -81,9 +81,10 @@
       - { repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/k6.gpg] https://dl.k6.io/deb stable main" }
       - { repo: ppa:lutris-team/lutris }
       - { repo: ppa:git-core/ppa }
-      - { repo: ppa:yubico/stable }
+# Missing jammy still
+#      - { repo: ppa:yubico/stable }
+#      - { repo: ppa:kisak/kisak-mesa }
       - { repo: ppa:graphics-drivers/ppa }
-      - { repo: ppa:kisak/kisak-mesa }
       - { repo: ppa:gns3/ppa }
       - { repo: ppa:apandada1/xournalpp-stable }
     apt_keys:
