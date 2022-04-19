@@ -1,6 +1,6 @@
 # run before doit
 sudo apt update
-sudo apt full-upgrade
+sudo apt full-upgrade -y
 sudo apt install -y ansible git python3-pip
 mkdir projects
 cd projects
