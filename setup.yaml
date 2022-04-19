@@ -69,9 +69,9 @@
       - { keyring: hashicorp,
           url: https://apt.releases.hashicorp.com/gpg,
           repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/hashicorp.gpg] https://apt.releases.hashicorp.com impish main" }
-      - { keyring: 1password,
-          url: https://downloads.1password.com/linux/keys/1password.asc,
-          repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/1password.gpg] https://downloads.1password.com/linux/debian/amd64 stable main" }
+#      - { keyring: 1password,
+#          url: https://downloads.1password.com/linux/keys/1password.asc,
+#          repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/1password.gpg] https://downloads.1password.com/linux/debian/amd64 stable main" }
       - { repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/k6.gpg] https://dl.k6.io/deb stable main" }
       - { repo: ppa:lutris-team/lutris }
       - { repo: ppa:git-core/ppa }
@@ -433,7 +433,7 @@
           - clang
           - htop
           - k6
-          - 1password
+#          - 1password
           - python3-pip
           - k4dirstat
 #          - oracle-java17-installer
