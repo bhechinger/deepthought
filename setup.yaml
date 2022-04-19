@@ -79,7 +79,6 @@
 #      - { repo: ppa:yubico/stable }
 #      - { repo: ppa:kisak/kisak-mesa }
       - { repo: ppa:graphics-drivers/ppa }
-      - { repo: ppa:gns3/ppa }
       - { repo: ppa:apandada1/xournalpp-stable }
     apt_keys:
       -  { keyring: k6, keyserver: keyserver.ubuntu.com, keyID: C5AD17C747E3415A3642D57D77C6C491D6AC1D69 }
@@ -408,9 +407,6 @@
           - debhelper
           - rabbitmq-server
           - trivy
-          - gns3-gui
-          - gns3-server
-          - gns3-iou
           - samba
           - vde2
           - psensor

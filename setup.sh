@@ -13,3 +13,5 @@ if ! test -f "${HOME}/projects/deepthought/secrets.yaml"; then
 fi
 
 ./doit
+
+sudo apt autoremove -y
