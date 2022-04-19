@@ -585,19 +585,19 @@
       uri:
         url: https://api.github.com/repos/Peltoche/lsd/releases/latest
         return_content: true
-      register: lsd_reponse
+      register: lsd_response
       when: lsd_check_deb.rc | default('') == 1
 
     - name: Filter github reply for LSD
       set_fact:
-        lsd_url: "{{ lsd_reponse.json | community.general.json_query(json_filter) }}"
+        lsd_url: "{{ lsd_response.json | community.general.json_query(json_filter) | list }}"
       vars:
         - json_filter: assets[?ends_with(name, 'amd64.deb') && !contains(name, 'musl')].browser_download_url
       when: lsd_check_deb.rc | default('') == 1
 
     - name: Get LSD
       get_url:
-        url: "{{ lsd_url }}"
+        url: "{{ lsd_url[0] }}"
         dest: "/tmp/lsd.deb"
       when: lsd_check_deb.rc | default('') == 1
 
