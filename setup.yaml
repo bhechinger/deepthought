@@ -39,6 +39,9 @@
         limit_item: nofile
         value: 65535
     repo_items:
+      - { keyring: github-cli,
+          url: https://cli.github.com/packages/githubcli-archive-keyring.gpg,
+          repo: "deb [arch=amd64 signed-by={{ keyrings_location }}/github-cli.gpg] https://cli.github.com/packages stable main" }
       - { keyring: trivy,
           url: https://aquasecurity.github.io/trivy-repo/deb/public.key,
           repo: "deb [signed-by={{ keyrings_location }}/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb focal main" }
@@ -436,6 +439,9 @@
 #          - 1password
           - python3-pip
           - k4dirstat
+          - conntrack
+          - sshfs
+          - gh
 #          - oracle-java17-installer
 
     - name: Install snaps
